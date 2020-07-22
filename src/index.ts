@@ -2,8 +2,10 @@ import * as Koa from 'Koa';
 import * as bodyparser from 'koa-bodyparser';
 
 import * as mongoose from 'mongoose';
-import { REDIS_CONF, MONGO_CONF } from './dbs/db';
+import { REDIS_CONF, MONGO_CONF } from './config/db';
 
+import * as session from 'koa-session';
+import * as redisStore from 'koa-redis';
 import * as user from './routes/user';
 
 const app = new Koa();
@@ -14,6 +16,23 @@ app.use(
     })
 );
 
+app.use(
+    session(
+        {
+            path: '/',
+            httpOnly: false,
+            maxAge: 60 * 60 * 24 * 1000,
+            store: redisStore({
+                port: REDIS_CONF.port,
+                host: REDIS_CONF.host
+            })
+        },
+        app
+    )
+);
+
+mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.connect(MONGO_CONF.getDbs(), {
     useNewUrlParser: true,
     useUnifiedTopology: true

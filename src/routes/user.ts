@@ -1,37 +1,42 @@
 import * as Router from 'koa-router';
-import User from '../dbs/models/user';
+import User from '../models/user';
+import { SuccessModule, ErrorModule } from '../util/resModel';
 
 const router = new Router();
 
 router.prefix('/user');
 
-router.get('/:name', async (ctx) => {
+router.get('/', async (ctx) => {
     const result = await User.find({
-        user_login: ctx.request.body.name
+        username: ctx.request.body.username
     });
-    ctx.body = result;
+    ctx.body = new SuccessModule('查询成功', result);
 });
 
 router.post('/', async (ctx) => {
     const user = new User({
-        user_login: ctx.request.body.user_login,
-        user_pass: ctx.request.body.user_pass,
-        user_registered: Date.now()
+        username: ctx.request.body.username,
+        password: ctx.request.body.password,
+        nicename: ctx.request.body.username,
+        email: ctx.request.body.email
     });
-    // 异步的捕获错误
-    try {
-        await user.save();
-        // 成功返回0
-        ctx.body = {
-            code: 0
-        };
-    } catch (e) {
-        // 错误先打印出来
-        console.log(e);
-        ctx.body = {
-            code: -1
-        };
-    }
+    const result = await user.save();
+    ctx.body = new SuccessModule('添加成功', result);
+});
+
+router.put('/', async (ctx) => {
+    const result = await User.updateOne(
+        { username: ctx.request.body.username },
+        { password: ctx.request.body.password }
+    );
+    ctx.body = new SuccessModule('修改成功', result);
+});
+
+router.delete('/', async (ctx) => {
+    const result = await User.findOneAndRemove({
+        username: ctx.request.body.username
+    });
+    ctx.body = new SuccessModule('删除成功', result);
 });
 
 export = router;

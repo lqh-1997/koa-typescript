@@ -13,12 +13,9 @@
         }
     ],
     "typescript.tsdk": "node_modules/typescript/lib",
-    "cSpell.words": [
-        "bodyparser",
-        "interf",
-        "nicename"
-    ],
+    "cSpell.words": ["bodyparser", "interf", "nicename", "typegoose"],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
-    }
+    },
+    "workbench.editor.enablePreview": false
 }
