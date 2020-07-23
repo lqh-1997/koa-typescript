@@ -84,7 +84,7 @@ const User = mongoose.model('User', userSchema);
 router.get('/user', async (ctx) => {
     // find为查找表中包含相关字段的操作
     const result = await User.find({
-        username: ctx.request.body.username
+        username: ctx.params.username
     });
     ctx.body = new SuccessModule('查询成功', result);
 });
@@ -123,10 +123,11 @@ router.put('/user', async (ctx) => {
     删除的时候会报一个小错误 只要添加上`mongoose.set('useFindAndModify', false);`即可
 
 ```javascript
-router.delete('/', async (ctx) => {
+router.delete('/user', async (ctx) => {
     const result = await User.findOneAndRemove({
         username: ctx.request.body.username
     });
     ctx.body = new SuccessModule('删除成功', result);
 });
 ```
+

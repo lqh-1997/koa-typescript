@@ -1,15 +1,20 @@
+import { DefaultState, Context } from 'koa';
 import * as Router from 'koa-router';
 import User from '../models/user';
 import { SuccessModule, ErrorModule } from '../util/resModel';
 
-const router = new Router();
+const router = new Router<DefaultState, Context>();
 
 router.prefix('/user');
 
-router.get('/', async (ctx) => {
+router.get('/', async (ctx: Context) => {
     const result = await User.find({
-        username: ctx.request.body.username
+        username: ctx.request.query.username
     });
+    if (result && ctx.session) {
+        ctx.session.username = ctx.request.query.username;
+        console.log(ctx.session.username);
+    }
     ctx.body = new SuccessModule('查询成功', result);
 });
 
